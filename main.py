@@ -60,7 +60,6 @@ def show_post(post_id):
     return render_template("post.html", post=requested_post)
 
 
-# TODO: add_new_post() to create a new blog post
 @app.route("/make-post", methods=["GET", "POST"])
 def add_new_post():
     form = PostForm()
@@ -82,7 +81,25 @@ def add_new_post():
             return redirect("/")
         return redirect("/")
     return render_template("make-post.html", form=form)
-# TODO: edit_post() to change an existing blog post
+
+@app.route("/edit/<int:id>", methods=["GET", "POST"])
+def edit_post(id):
+    post = db.session.get(BlogPost, id)
+    form = PostForm(obj=post)
+    if form.validate_on_submit():
+        try:
+            post.title = form.title.data
+            post.subtitle = form.subtitle.data
+            post.author = form.author.data
+            post.img_url = form.img_url.data
+            post.body = form.body.data
+            db.session.commit()
+            return redirect("/")
+        except SQLAlchemyError as e:
+            print(e)
+            return redirect("/")
+    return render_template("edit.html", form=form)
+
 
 # TODO: delete_post() to remove a blog post from the database
 
