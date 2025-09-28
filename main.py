@@ -2,6 +2,7 @@ from flask import Flask, render_template, redirect, url_for
 from flask_bootstrap import Bootstrap5
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
+from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy import Integer, String, Text
 from flask_wtf import FlaskForm
 from wtforms import StringField, SubmitField
@@ -13,6 +14,7 @@ from datetime import date
 app = Flask(__name__)
 app.config['SECRET_KEY'] = '8BYkEfBA6O6donzWlSihBXox7C0sKR6b'
 Bootstrap5(app)
+CKEditor(app)
 
 # CREATE DATABASE
 class Base(DeclarativeBase):
@@ -20,6 +22,15 @@ class Base(DeclarativeBase):
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///posts.db'
 db = SQLAlchemy(model_class=Base)
 db.init_app(app)
+
+class PostForm(FlaskForm):
+    title = StringField("Add Blog Title", validators=[DataRequired()])
+    subtitle = StringField("Add Blog Subtitle", validators=[DataRequired()])
+    author = StringField("Blog Author", validators=[DataRequired()])
+    img_url = StringField("Add Image URL", validators=[DataRequired()])
+    body = CKEditorField("Add Blog Content Here", validators=[DataRequired()])
+    submit = SubmitField("Done")
+
 
 
 # CONFIGURE TABLE
@@ -50,9 +61,28 @@ def show_post(post_id):
 
 
 # TODO: add_new_post() to create a new blog post
-@app.route("/make-post")
+@app.route("/make-post", methods=["GET", "POST"])
 def add_new_post():
-    return render_template("make-post.html")
+    form = PostForm()
+    if form.validate_on_submit():
+        title = form.title.data
+        subtitle = form.subtitle.data
+        author = form.author.data
+        img_url = form.img_url.data
+        body = form.body.data
+        today = date.today().strftime("%B %#d, %Y")
+        print(today)
+        print(body)
+        try:
+            pass
+            return redirect("/")
+
+        except SQLAlchemyError as e:
+            db.session.rollback()
+            print(e)
+            return redirect("/")
+        return redirect("/")
+    return render_template("make-post.html", form=form)
 # TODO: edit_post() to change an existing blog post
 
 # TODO: delete_post() to remove a blog post from the database
