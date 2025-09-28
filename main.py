@@ -53,6 +53,8 @@ def get_all_posts():
     posts = [post for post in db.session.query(BlogPost).all()]
     return render_template("index.html", all_posts=posts)
 
+
+
 @app.route('/<int:post_id>')
 def show_post(post_id):
     requested_post = db.session.get(BlogPost, post_id)
@@ -100,8 +102,18 @@ def edit_post(id):
             return redirect("/")
     return render_template("edit.html", form=form)
 
+@app.route("/delete/<int:id>", methods=["POST"])
+def delete(id):
+    try:
+        post = db.session.get(BlogPost, id)
+        db.session.delete(post)
+        db.session.commit()
+        return redirect(url_for("get_all_posts"))
+    except SQLAlchemyError as e:
+        print(e)
+        db.session.rollback()
+        return redirect(url_for("get_all_posts"))
 
-# TODO: delete_post() to remove a blog post from the database
 
 # Below is the code from previous lessons. No changes needed.
 @app.route("/about")
