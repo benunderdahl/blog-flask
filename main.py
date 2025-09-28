@@ -71,12 +71,11 @@ def add_new_post():
         img_url = form.img_url.data
         body = form.body.data
         today = date.today().strftime("%B %#d, %Y")
-        print(today)
-        print(body)
         try:
-            pass
+            new_post = BlogPost(title=title, subtitle=subtitle, author=author, img_url=img_url, body=body, date=today)
+            db.session.add(new_post)
+            db.session.commit()
             return redirect("/")
-
         except SQLAlchemyError as e:
             db.session.rollback()
             print(e)
