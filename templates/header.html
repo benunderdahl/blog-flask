@@ -67,6 +67,26 @@
                 >Home</a
               >
             </li>
+            <li class="nav-item">
+              <a
+                class="nav-link px-lg-3 py-3 py-lg-4"
+                href="{{ url_for('about') }}"
+                >About</a
+              >
+            </li>
+            <li class="nav-item">
+              <a
+                class="nav-link px-lg-3 py-3 py-lg-4"
+                href="{{ url_for('contact') }}"
+                >Contact</a>
+            </li>
+            {% if current_user.is_authenticated %}
+            <li class="nav-item">
+              <a
+                class="nav-link px-lg-3 py-3 py-lg-4"
+                href="{{ url_for('logout') }}"
+                >Logout</a>
+              {% else %}
              <li class="nav-item">
               <a
                 class="nav-link px-lg-3 py-3 py-lg-4"
@@ -81,21 +101,9 @@
                 >Register</a
               >
             </li>
-            <li class="nav-item">
-              <a
-                class="nav-link px-lg-3 py-3 py-lg-4"
-                href="{{ url_for('about') }}"
-                >About</a
-              >
-            </li>
-            <li class="nav-item">
-              <a
-                class="nav-link px-lg-3 py-3 py-lg-4"
-                href="{{ url_for('contact') }}"
-                >Contact</a
-              >
-            </li>
+            {% endif %}
           </ul>
         </div>
       </div>
     </nav>
+

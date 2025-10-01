@@ -150,12 +150,16 @@ def login():
         email = form.email.data
         password = form.password.data
         user = db.session.execute(db.select(User).where(User.email == email)).scalar()
-        if check_password_hash(user.password, password):
-            login_user(user)
-            return redirect("/")
+        if user:
+            if check_password_hash(user.password, password):
+                login_user(user)
+                return redirect("/")
+            else:
+                flash("Incorrect Password", "danger")
+                return redirect("/login")
         else:
-            flash(message="Username of password is incorrect", )
-            return redirect("/login")
+            flash("Incorrect Email Address", "info")
+            return redirect("login")
     return render_template("login.html", form=form)
 
 @app.route("/register", methods=["GET", "POST"])
@@ -187,6 +191,11 @@ def about():
 @app.route("/contact")
 def contact():
     return render_template("contact.html")
+
+@app.route("/logout")
+def logout():
+    logout_user()
+    return redirect("/login")
 
 
 if __name__ == "__main__":
